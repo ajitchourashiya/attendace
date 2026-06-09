@@ -44,7 +44,8 @@ class _StudentListScreenState
   }
   /// ================= IMAGE =================
   String getImageUrl(String photo) =>
-      "${ApiService.baseUrl}$photo";
+      "${ApiService.baseUrl}/$photo";
+
   /// ================= REFRESH =================
   Future refreshStudents() async {
     loadStudents();

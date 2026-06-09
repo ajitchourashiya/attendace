@@ -778,12 +778,32 @@ class _CameraScreenState extends State<CameraScreen> {
           //       style: TextStyle(fontSize: 16),
           //     ),
           //   ),
-          if (isCameraReady && controller != null)
-            CameraPreview(controller!)
-          else
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
+          /////////////////////////////
+          // if (isCameraReady && controller != null)
+          //   CameraPreview(controller!)
+          // else
+          //   const Center(
+          //     child: CircularProgressIndicator(),
+          //   ),
+
+           if (isCameraReady && controller != null)
+             Center(
+               child: ClipRect(
+                 child: FittedBox(
+                   fit: BoxFit.cover,
+                   child: SizedBox(
+                     width: controller!.value.previewSize?.height ?? 0,
+                     height: controller!.value.previewSize?.width ?? 0,
+                     child: CameraPreview(controller!),
+                   ),
+                 ),
+               ),
+             )
+           else
+             const Center(
+               child: CircularProgressIndicator(),
+             ),
+
           /* LOCATION */
           Positioned(
             top: 20,

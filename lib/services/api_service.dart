@@ -6,10 +6,8 @@ import '../models/students.dart';
 import '../models/attendance.dart';
 
 class ApiService {
-  // static const String baseUrl = "http://10.38.174.149/attendance_api";
-  // static const String baseUrl ="https://midcbreastinfraredtech.com/attendance_api";
-  static const String baseUrl = "http://192.168.29.32/attendance_api";
-  // static const String baseUrl = "http://localhost/attendance_api/";
+  static const String baseUrl ="https://attendance360.dacnis.net/attendance_api";
+  // static const String baseUrl = "http://192.168.29.32/attendance_api";
 
   /* =========================
       GET ATTENDANCE
