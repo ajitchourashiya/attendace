@@ -768,83 +768,132 @@ class _CameraScreenState extends State<CameraScreen> {
 
       body: Stack(
         children: [
-          // 🚨 CAMERA ONLY FOR MOBILE
-          // if (!kIsWeb && isCameraReady && controller != null)
-          //   CameraPreview(controller!)
-          // else
-          //   const Center(
-          //     child: Text(
-          //       "Web Mode - Camera Disabled",
-          //       style: TextStyle(fontSize: 16),
-          //     ),
-          //   ),
-          /////////////////////////////
-          // if (isCameraReady && controller != null)
-          //   CameraPreview(controller!)
-          // else
-          //   const Center(
-          //     child: CircularProgressIndicator(),
-          //   ),
 
-           if (isCameraReady && controller != null)
-             Center(
-               child: ClipRect(
-                 child: FittedBox(
-                   fit: BoxFit.cover,
-                   child: SizedBox(
-                     width: controller!.value.previewSize?.height ?? 0,
-                     height: controller!.value.previewSize?.width ?? 0,
-                     child: CameraPreview(controller!),
-                   ),
-                 ),
-               ),
-             )
-           else
-             const Center(
-               child: CircularProgressIndicator(),
-             ),
-
-          /* LOCATION */
+          if (isCameraReady && controller != null)
+            kIsWeb
+                ? Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: controller!.value.previewSize!.width,
+                  height: controller!.value.previewSize!.height,
+                  child: CameraPreview(controller!),
+                ),
+              ),
+            )
+                : CameraPreview(controller!)
+          else
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+          /// LOCATION CARD
           Positioned(
-            top: 20,
-            left: 10,
-            right: 10,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              color: Colors.black54,
-              child: Text(
-                "📍 $currentAddress\nLat: $latitude | Lng: $longitude",
-                style: const TextStyle(color: Colors.white, fontSize: 12),
+            top: kIsWeb ? 20 : 20,
+            left: kIsWeb ? 20 : 10,
+            right: kIsWeb ? 20 : 10,
+            child: SafeArea(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.65),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    const Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 18,
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    Expanded(
+                      child: Text(
+                        "📍 $currentAddress\nLat: ${latitude.toStringAsFixed(6)} | "
+                            "Lng: ${longitude.toStringAsFixed(6)}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
 
-          /* BUTTON */
+          /// FACE GUIDE ONLY FOR WEB
+          if (kIsWeb)
+            Center(
+              child: IgnorePointer(
+                child: Container(
+                  width: 320,
+                  height: 420,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 3,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+
+          /// BUTTON
           Positioned(
             bottom: 30,
             left: 0,
             right: 0,
             child: Center(
               child: isProcessing
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton.icon(
-                // onPressed: () {
-                //   if (kIsWeb) {
-                //     markAttendanceWeb();
-                //   } else {
-                //     captureImage();
-                //   }
-                // },
-                onPressed: () {
-                  if (kIsWeb) {
-                    captureImageWeb();
-                  } else {
-                    captureImage();
-                  }
-                },
-                icon: Icon(kIsWeb ? Icons.check_circle : Icons.camera),
-                label: Text(
-                  kIsWeb ? "Mark Attendance" : "Scan Face",
+                  ? Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
+                  : SizedBox(
+                width: kIsWeb ? 260 : null,
+                height: kIsWeb ? 50 : null,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (kIsWeb) {
+                      captureImageWeb();
+                    } else {
+                      captureImage();
+                    }
+                  },
+                  icon: Icon(
+                    kIsWeb
+                        ? Icons.verified_user
+                        : Icons.camera_alt,
+                  ),
+                  label: Text(
+                    kIsWeb
+                        ? "Mark Attendance"
+                        : "Scan Face",
+                  ),
                 ),
               ),
             ),
