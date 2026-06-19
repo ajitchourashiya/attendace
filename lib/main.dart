@@ -114,6 +114,64 @@
 //     );
 //   }
 // }
+//
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
+//
+// import 'firebase_options.dart';
+// import 'screens/splash_screen.dart';
+// import 'providers/ota_update_provider.dart';
+//
+// Future<void> _firebaseMessagingBackgroundHandler(
+//     RemoteMessage message) async {
+//   await Firebase.initializeApp(
+//     options: DefaultFirebaseOptions.currentPlatform,
+//   );
+// }
+//
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//
+//   await Firebase.initializeApp(
+//     options: DefaultFirebaseOptions.currentPlatform,
+//   );
+//
+//   FirebaseMessaging.onBackgroundMessage(
+//     _firebaseMessagingBackgroundHandler,
+//   );
+//
+//   await FirebaseMessaging.instance.requestPermission();
+//
+//   final token =
+//   await FirebaseMessaging.instance.getToken();
+//
+//   print("FCM TOKEN => $token");
+//
+//   await OtaUpdateProvider().checkPlayerid();
+//
+//   runApp(
+//     const AttendanceApp(),
+//   );
+// }
+//
+// class AttendanceApp extends StatelessWidget {
+//   const AttendanceApp({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetMaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       title: "Face Attendance",
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: const SplashScreen(),
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -123,6 +181,7 @@ import 'firebase_options.dart';
 import 'screens/splash_screen.dart';
 import 'providers/ota_update_provider.dart';
 
+/// Background handler (mobile only usage)
 Future<void> _firebaseMessagingBackgroundHandler(
     RemoteMessage message) async {
   await Firebase.initializeApp(
@@ -137,22 +196,33 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Background messaging (safe)
   FirebaseMessaging.onBackgroundMessage(
     _firebaseMessagingBackgroundHandler,
   );
 
-  await FirebaseMessaging.instance.requestPermission();
+  // 🔥 WEB SAFE BLOCK
+  try {
+    if (!GetPlatform.isWeb) {
+      await FirebaseMessaging.instance.requestPermission();
 
-  final token =
-  await FirebaseMessaging.instance.getToken();
+      final token = await FirebaseMessaging.instance.getToken();
+      print("FCM TOKEN => $token");
+    }
+  } catch (e) {
+    print("FCM error: $e");
+  }
 
-  print("FCM TOKEN => $token");
+  // 🔥 WEB SAFE BLOCK (OTA update only for mobile)
+  try {
+    if (!GetPlatform.isWeb) {
+      await OtaUpdateProvider().checkPlayerid();
+    }
+  } catch (e) {
+    print("OTA error: $e");
+  }
 
-  await OtaUpdateProvider().checkPlayerid();
-
-  runApp(
-    const AttendanceApp(),
-  );
+  runApp(const AttendanceApp());
 }
 
 class AttendanceApp extends StatelessWidget {
