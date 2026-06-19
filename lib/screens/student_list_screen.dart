@@ -176,13 +176,44 @@ class _StudentListScreenState
 
                   const SizedBox(height: 4),
 
-                  Text(
-                    student.phone,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "📱 ${student.phone}",
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
 
+                      const SizedBox(height: 4),
+
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "🔑 ${student.password}",
+                            style: TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
+
+                          Text(
+                            "👤 ${student.role}",
+                            style: const TextStyle(
+                              color: Colors.deepPurple,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 6),
 
                   Container(
@@ -383,6 +414,7 @@ class _StudentListScreenState
 
                 /// ALL DETAILS CARD
                 _infoTile("Phone", student.phone),
+                _infoTile("Password", student.password),
                 _infoTile("Email", student.email),
                 _infoTile("Role", student.role),
                 _infoTile("Aadhar", student.aadharNumber),
@@ -492,6 +524,9 @@ class _StudentListScreenState
     final phoneController =
     TextEditingController(text: student.phone);
 
+    final passwordController =
+    TextEditingController(text: student.password);
+
     final emailController =
     TextEditingController(text: student.email);
 
@@ -510,142 +545,222 @@ class _StudentListScreenState
     final emergencyController =
     TextEditingController(text: student.emergencyContact);
 
+    /// Current Role
+    String selectedRole = student.role;
+
+    /// Available Roles
+    final List<String> roles = [
+      "Admin",
+      "HR",
+      "Manager",
+      "User",
+    ];
+
     showDialog(
       context: context,
       builder: (_) {
-        return AlertDialog(
-          title: const Text("Edit Employee"),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
 
-          content: SizedBox(
-            width: 400,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+            return AlertDialog(
+              title: const Text("Edit Employee"),
 
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: "Employee Name",
-                    ),
+              content: SizedBox(
+                width: 400,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          labelText: "Employee Name",
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: phoneController,
+                        readOnly: true,
+                        keyboardType: TextInputType.phone,
+                        decoration: const InputDecoration(
+                          labelText: "Phone Number",
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: passwordController,
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.lock),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          labelText: "Email",
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: aadharController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: "Aadhar Number",
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: guardianController,
+                        decoration: const InputDecoration(
+                          labelText: "Father/Husband Name",
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: addressController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: "Address",
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: dobController,
+                        decoration: const InputDecoration(
+                          labelText: "Date of Birth",
+                          hintText: "YYYY-MM-DD",
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextField(
+                        controller: emergencyController,
+                        keyboardType: TextInputType.phone,
+                        decoration: const InputDecoration(
+                          labelText: "Emergency Contact",
+                        ),
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      /// ROLE DROPDOWN
+                      DropdownButtonFormField<String>(
+                        value: selectedRole,
+                        decoration: const InputDecoration(
+                          labelText: "Role",
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.admin_panel_settings),
+                        ),
+                        items: roles.map((role) {
+                          return DropdownMenuItem<String>(
+                            value: role,
+                            child: Text(role),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() {
+                              selectedRole = value;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
-
-                  const SizedBox(height: 10),
-
-                  TextField(
-                    controller: phoneController,
-                    readOnly: true,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      labelText: "Phone Number",
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextField(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextField(
-                    controller: aadharController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: "Aadhar Number",
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextField(
-                    controller: guardianController,
-                    decoration: const InputDecoration(
-                      labelText: "Father/Husband Name",
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextField(
-                    controller: addressController,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: "Address",
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextField(
-                    controller: dobController,
-                    decoration: const InputDecoration(
-                      labelText: "Date of Birth",
-                      hintText: "YYYY-MM-DD",
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextField(
-                    controller: emergencyController,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      labelText: "Emergency Contact",
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
 
-          actions: [
+              actions: [
 
-            TextButton(
-              onPressed: () =>
-                  Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
 
-            ElevatedButton(
-              onPressed: () async {
+                ElevatedButton(
+                  onPressed: () async {
 
-                bool success =
-                await ApiService.updateStudent(
-                  student.id,
-                  nameController.text,
-                  phoneController.text,
-                  emailController.text,
-                  aadharController.text,
-                  guardianController.text,
-                  addressController.text,
-                  dobController.text,
-                  emergencyController.text,
-                );
+                    bool success =
+                    await ApiService.updateStudent(
+                      student.id.toString(),
+                      nameController.text,
+                      phoneController.text,
+                      passwordController.text,
+                      emailController.text,
+                      aadharController.text,
+                      guardianController.text,
+                      addressController.text,
+                      dobController.text,
+                      emergencyController.text,
+                      selectedRole,
+                    );
 
-                if (success) {
+                    if (success) {
 
-                  Navigator.pop(context);
+                      setState(() {
+                        student.name = nameController.text;
+                        student.password = passwordController.text;
+                        student.email = emailController.text;
+                        student.aadharNumber = aadharController.text;
+                        student.guardianName = guardianController.text;
+                        student.address = addressController.text;
+                        student.dob = dobController.text;
+                        student.emergencyContact =
+                            emergencyController.text;
+                        student.role = selectedRole;
+                      });
 
-                  loadStudents();
+                      Navigator.pop(context);
 
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(
-                    const SnackBar(
-                      content:
-                      Text("Employee Updated"),
-                    ),
-                  );
-                }
-              },
-              child: const Text("Update"),
-            ),
-          ],
+                      loadStudents();
+
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Employee Updated Successfully",
+                          ),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+
+                    } else {
+
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Failed to Update Employee",
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text("Update"),
+                ),
+              ],
+            );
+          },
         );
       },
     );

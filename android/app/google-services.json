@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1042065447563",
+    "project_id": "demotp-46f3d",
+    "storage_bucket": "demotp-46f3d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042065447563:android:6d5bd8deb7acc1d00f128e",
+        "android_client_info": {
+          "package_name": "com.example.attendance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzQqnEB76AksRO5GpBwOZIOMQRiQhBW_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042065447563:android:fd5fdd4839527da30f128e",
+        "android_client_info": {
+          "package_name": "com.example.otp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzQqnEB76AksRO5GpBwOZIOMQRiQhBW_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

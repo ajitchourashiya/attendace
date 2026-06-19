@@ -13,14 +13,11 @@ class ApiService {
       GET ATTENDANCE
   ========================= */
 
-
-
   static Future<List<Attendance>> getAttendance({
     required String studentId,
     String? fromDate,
     String? toDate,
   }) async {
-
     String url = "$baseUrl/get_attendance.php?student_id=$studentId";
 
     if (fromDate != null &&
@@ -38,7 +35,6 @@ class ApiService {
     print("Response => ${response.body}");
 
     if (response.statusCode == 200) {
-
       final jsonData = jsonDecode(response.body);
 
       if (jsonData["data"] == null || jsonData["data"].isEmpty) {
@@ -52,6 +48,7 @@ class ApiService {
 
     return [];
   }
+
   /* =========================
       GET STUDENTS
   ========================= */
@@ -175,9 +172,9 @@ class ApiService {
   //   }
   // }
   static Future<Map<String, dynamic>?> matchFace(
-      List<double> embedding,
-      int studentId,
-      ) async {
+    List<double> embedding,
+    int studentId,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse("$baseUrl/match_face.php"),
@@ -213,12 +210,12 @@ class ApiService {
 ========================= */
 
   static Future<Map<String, dynamic>?> markAttendance(
-      int studentId, {
-        required double latitude,
-        required double longitude,
-        required String address,
-        required String dateTime,
-      }) async {
+    int studentId, {
+    required double latitude,
+    required double longitude,
+    required String address,
+    required String dateTime,
+  }) async {
     try {
       final response = await http.post(
         Uri.parse("$baseUrl/mark_attendance.php"),
@@ -261,41 +258,83 @@ class ApiService {
     }
   }
 
+  // static Future<bool> updateStudent(
+  //   int id,
+  //   String name,
+  //   String phone,
+  //   String password,
+  //   String email,
+  //   String aadharNumber,
+  //   String guardianName,
+  //   String address,
+  //   String dob,
+  //   String emergencyContact,
+  // ) async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse("$baseUrl/update_student.php"),
+  //       body: {
+  //         "id": id.toString(),
+  //         "name": name,
+  //         "phone": phone,
+  //         "password": password,
+  //         "email": email,
+  //         "aadhar_number": aadharNumber,
+  //         "guardian_name": guardianName,
+  //         "address": address,
+  //         "dob": dob,
+  //         "emergency_contact": emergencyContact,
+  //       },
+  //     );
+  //
+  //     print("UPDATE STUDENT:");
+  //     print(response.body);
+  //
+  //     final data = jsonDecode(response.body);
+  //
+  //     return data["status"] == true;
+  //   } catch (e) {
+  //     print("Update Student Error: $e");
+  //     return false;
+  //   }
+  // }
+
   static Future<bool> updateStudent(
-    int id,
-    String name,
-    String phone,
-    String email,
-    String aadharNumber,
-    String guardianName,
-    String address,
-    String dob,
-    String emergencyContact,
-  ) async {
+      String id,
+      String name,
+      String phone,
+      String password,
+      String email,
+      String aadharNumber,
+      String guardianName,
+      String address,
+      String dob,
+      String emergencyContact,
+      String role,
+      ) async {
     try {
       final response = await http.post(
         Uri.parse("$baseUrl/update_student.php"),
         body: {
-          "id": id.toString(),
+          "id": id,
           "name": name,
           "phone": phone,
+          "password": password,
           "email": email,
           "aadhar_number": aadharNumber,
           "guardian_name": guardianName,
           "address": address,
           "dob": dob,
           "emergency_contact": emergencyContact,
+          "role": role,
         },
       );
-
-      print("UPDATE STUDENT:");
-      print(response.body);
 
       final data = jsonDecode(response.body);
 
       return data["status"] == true;
     } catch (e) {
-      print("Update Student Error: $e");
+      print(e);
       return false;
     }
   }
@@ -358,14 +397,10 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> searchMobile(
-      String mobile,
-      ) async {
+  static Future<Map<String, dynamic>> searchMobile(String mobile) async {
     final response = await http.post(
       Uri.parse("$baseUrl/search_mobile.php"),
-      body: {
-        "phone": mobile,
-      },
+      body: {"phone": mobile},
     );
 
     return jsonDecode(response.body);
@@ -375,9 +410,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse("${baseUrl}/check_status.php"),
-        body: {
-          "id": id.toString(),
-        },
+        body: {"id": id.toString()},
       );
 
       final data = jsonDecode(response.body);
@@ -389,30 +422,65 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>?> matchFaceWeb(
-      Uint8List imageBytes,
-      int studentId,
-      ) async {
+    Uint8List imageBytes,
+    int studentId,
+  ) async {
     var request = http.MultipartRequest(
       "POST",
       Uri.parse("${baseUrl}/match_face_web.php"),
     );
 
-    request.fields["student_id"] =
-        studentId.toString();
+    request.fields["student_id"] = studentId.toString();
 
     request.files.add(
-      http.MultipartFile.fromBytes(
-        "image",
-        imageBytes,
-        filename: "face.jpg",
-      ),
+      http.MultipartFile.fromBytes("image", imageBytes, filename: "face.jpg"),
     );
 
     final response = await request.send();
 
-    final body =
-    await response.stream.bytesToString();
+    final body = await response.stream.bytesToString();
 
     return jsonDecode(body);
+  }
+
+  static Future<List<dynamic>> getNotifications() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          "$baseUrl/get_notifications.php",
+        ),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (data["status"] == true) {
+        return data["data"];
+      }
+
+      return [];
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
+
+  static Future<void> saveFcmToken({
+    required int userId,
+    required String role,
+    required String token,
+  }) async {
+    try {
+      await http.post(
+        Uri.parse("$baseUrl/save_fcm_token.php"),
+        body: {
+          "user_id": userId.toString(),
+          "role": role,
+          "token": token,
+        },
+      );
+    } catch (e) {
+      print("SAVE TOKEN ERROR => $e");
+    }
   }
 }

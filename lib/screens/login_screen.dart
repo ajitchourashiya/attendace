@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,65 +51,6 @@ class _LoginScreenState extends State<LoginScreen>
     _controller.dispose();
     super.dispose();
   }
-
-  // Future<void> login() async {
-  //   if (phoneController.text.trim().isEmpty ||
-  //       passwordController.text.trim().isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Please enter mobile and password")),
-  //     );
-  //     return;
-  //   }
-  //
-  //   setState(() => loading = true);
-  //
-  //   try {
-  //     Student? student = await ApiService.login(
-  //       phoneController.text.trim(),
-  //       passwordController.text.trim(),
-  //     );
-  //
-  //     setState(() => loading = false);
-  //
-  //     if (student != null) {
-  //       final prefs = await SharedPreferences.getInstance();
-  //
-  //       // Save login session
-  //       await prefs.setBool("isLoggedIn", true);
-  //
-  //       // Save student details
-  //       await prefs.setString("student_id", student.id.toString());
-  //
-  //       await prefs.setString("user_name", student.name);
-  //
-  //       await prefs.setString("role", student.role);
-  //
-  //       if (!mounted) return;
-  //
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (_) => HomeScreen(
-  //             userId: student.id,
-  //             role: student.role,
-  //             userName: student.name,
-  //             // userId: student.id.toString(),
-  //           ),
-  //         ),
-  //       );
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text("Invalid Mobile or Password")),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     setState(() => loading = false);
-  //
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text("Error: $e")));
-  //   }
-  // }
 
   Future<void> login() async {
     if (phoneController.text.trim().isEmpty ||
@@ -162,7 +104,26 @@ class _LoginScreenState extends State<LoginScreen>
         await prefs.setString("student_id", student.id.toString());
         await prefs.setString("user_name", student.name);
         await prefs.setString("role", student.role);
+// SAVE FCM TOKEN
 
+        try {
+          String? token =
+          await FirebaseMessaging.instance.getToken();
+
+          print("FCM TOKEN => $token");
+
+          if (token != null) {
+            await ApiService.saveFcmToken(
+              userId: student.id,
+              role: student.role,
+              token: token,
+            );
+
+            print("FCM TOKEN SAVED");
+          }
+        } catch (e) {
+          print("FCM SAVE ERROR => $e");
+        }
         if (!mounted) return;
 
         Navigator.pushReplacement(
