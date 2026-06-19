@@ -23,7 +23,7 @@
     }
   },
   "hosting": {
-    "public": "ajitchourashiya/attendace",
+    "public": "build/web",
     "ignore": [
       "firebase.json",
       "**/.*",
